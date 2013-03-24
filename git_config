@@ -1,0 +1,17 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	fetch = +refs/heads/*:refs/remotes/origin/*
+	url = ssh://<user>@<myserver>/repos/git/weetabytes
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[remote "github"]
+	fetch = +refs/heads/*:refs/remotes/origin/*
+	url = ssh://git@github.com/weetabix/weetabytes.git
+[remote "all"]
+	url = ssh://<user>@<myserver>/repos/git/weetabytes
+	url = ssh://git@github.com/weetabix/weetabytes.git
