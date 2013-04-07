@@ -90,7 +90,7 @@ start_bin() {
 stop_bin() {
 	load_settings || exit 0
 	if is_running; then
-		TMPFILE="$(mktemp --tmpdir sabnzbdplus.XXXXXXXXXX)"
+		TMPFILE="$(mktemp --tmpdir <binary name>.XXXXXXXXXX)"
 		[ $? -eq 0 ] || exit 1
 		trap '[ -f "$TMPFILE" ] && rm -f "$TMPFILE"' EXIT
 		echo "$PID" > "$TMPFILE"
