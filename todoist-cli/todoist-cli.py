@@ -6,6 +6,11 @@ from pprint import pprint
 import argparse
 import time
 
+#import api key
+import sys
+sys.path.insert(0, '/etc/todoist-cli/')
+import tcconfig
+
 task = ""
 project = ""
 priority = None
@@ -32,7 +37,7 @@ parser.add_argument('-P','--priority',
 args = parser.parse_args()
 
 #Get a first run of the sync results.
-api = todoist.TodoistAPI('46f1e8330b161e70ba2be0c608b84ceb4ed8f043')
+api = todoist.TodoistAPI(tcconfig.api_key)
 api.reset_state()
 results=api.sync(commands=[])
 
