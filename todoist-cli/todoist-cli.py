@@ -47,7 +47,7 @@ def reset_sync():
 
 def task_list():
     """Retrive and print a task list."""
-    print(' {0:^3} ┊{2:<3}┊ {1:^40} {3:^}'.format("","Task Notes","⬆@@","Proje##"))
+    print(' {0:^3} ┊{2:<3}┊ {1:^40} {3:^}'.format("","Task Notes","Pr⬆","Project"))
     print(' {:┉^3} ┊{:┉<3}┊ {:┉^40} {:┉^7}'.format("","","",""))
     for i in range(0,len(results['items'])):
         if results['items'][i]['item_order'] != 14:
