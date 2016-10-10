@@ -9,23 +9,36 @@ import time
 task = ""
 project = ""
 priority = None
-parser = argparse.ArgumentParser(description='A tool to allow you to add and list tasks from Todoist.\
-                                             The default behaviour is to list your tasks.')
-parser.add_argument('-a', '--add', help='Add task', action='store', dest='task',nargs='*')
-parser.add_argument('-p','--project', help='Project (Default Inbox)', action='store', dest='project', default="Inbox")
-parser.add_argument('-P','--priority', help='Priority (Default None)', type=int, action='store', dest='priority',default=2)
 
-#parser.add_argument('task', help='Add task', action='store')
+parser = argparse.ArgumentParser(description='A tool to allow you to add and list tasks from Todoist.\
+                                             The default behaviour is to list your tasks. (defaults) are in ()\'s. ')
+parser.add_argument('-a', '--add', 
+        help='Add task', 
+        action='store',
+        dest='task',
+        nargs='*')
+parser.add_argument('-p','--project',
+        help='Project (Inbox)',
+        action='store',
+        dest='project',
+        default="Inbox")
+parser.add_argument('-P','--priority', 
+        help='Priority 1 - 4 Low Med High Urgent (1 "Low Energy")', 
+        type=int,
+        action='store', 
+        dest='priority',
+        default=1)
 
 args = parser.parse_args()
-print(args)
+
+#Get a first run of the sync results.
 api = todoist.TodoistAPI('46f1e8330b161e70ba2be0c608b84ceb4ed8f043')
 api.reset_state()
 results=api.sync(commands=[])
 
 
 def reset_sync():
-
+    """Reset the sync state and repull results."""
     api.reset_state()                                                                                                
     results=api.sync(commands=[])  
     print("Reset")
@@ -33,7 +46,7 @@ def reset_sync():
 
 
 def task_list():
-
+    """Retrive and print a task list."""
     print(' {0:^3} ┊{2:<3}┊ {1:^40} {3:^}'.format("","Task Notes","⬆@@","Proje##"))
     print(' {:┉^3} ┊{:┉<3}┊ {:┉^40} {:┉^7}'.format("","","",""))
     for i in range(0,len(results['items'])):
@@ -46,23 +59,23 @@ def task_list():
 
 
 def task_add(task_list,project,priority):
-    print("task_add")
+    """Add a task to the list."""
+    print("task added")
     task = (" ".join(task_list))
     print("task",task)
-    print("project",project)
     print("priority",priority)
 
     for j in range(0,len(results['projects'])):
         if results['projects'][j]['name'] == project:
             proj = results['projects'][j]['id']
-    print("proj: ",proj)
+    print("proj:",project,"(",proj,")")
     item = api.items.add(task,proj,priority=priority)    
     api.commit()
 
 
 if args.task:
     task_add(args.task,args.project,args.priority)
-    results = reset_sync()
-    task_list()
+#    results = reset_sync()
+#    task_list()
 else:
     task_list()
