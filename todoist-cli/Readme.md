@@ -1,1 +1,2 @@
 A command line tool to access todoist.
+All commits will start being signed.
