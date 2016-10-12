@@ -1,8 +1,8 @@
 ##todoist-cli.py
 
-####A command line tool to access todoist.
+####A Python3 command line tool to access todoist.
 
-All commits will start being signed with 71627D48.
+All commits will start being signed with Key#71627D48.
 
 ###Installation
 
