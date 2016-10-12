@@ -1,17 +1,17 @@
 
 For zsh and Bash:
 
-alias task="~/git/weetabytes/todoist-cli/todoist-cli.py"                       
-alias tasks="~/git/weetabytes/todoist-cli/todoist-cli.py"                      
-alias taskadd="~/git/weetabytes/todoist-cli/todoist-cli.py -a "                
+alias task="~/git/term-doist/term-doist.py"                       
+alias tasks="~/git/term-doist/term-doist.py"                      
+alias taskadd="~/git/term-doist/term-doist.py -a "                
 
 or a function to allow you "task" and "task add"
 
 function task {                                                                 
   if (( $# == 0 ))                                                              
-  then ~/git/weetabytes/todoist-cli/todoist-cli.py                  
+  then ~/git/term-doist/term-doist.py                  
   fi                                                                            
   if [ "$1" = 'add' ]                                                           
-  then ~/git/weetabytes/todoist-cli/todoist-cli.py -a "${@:2}"       
+  then ~/git/term-doist/term-doist.py -a "${@:2}"       
   fi                                                                            
   }                         
