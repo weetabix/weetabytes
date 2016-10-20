@@ -3,11 +3,28 @@ import mysql.connector
 from mysql.connector import errorcode
 from datetime import datetime, timedelta
 import os
+import argparse
+
+parser = argparse.ArgumentParser(description='A tool to manage debts and credits owed.\
+                                             The default behaviour is to list everything.')
+parser.add_argument('-ad', '--add-debt',
+        help='Add debt',
+        action='store_const',
+        const='D',
+        dest='type')
+#        nargs='*')
+parser.add_argument('-ac', '--add-credit',
+        help='Add credit',
+        action='store_const',
+        const='C',
+        dest='type')
+
+args = parser.parse_args()
 
 def main():
     """Main is here so I can hide long ugly lists of SQL variables at the bottom."""
     os.system('clear')
-    print('\n\nUoMi\n\n')
+    print('\nUoMi\n\n')
     try:
         cnx = mysql.connector.connect(user='uomi',
                                       password='B9cSPPc73AKUSuX6',
@@ -27,28 +44,51 @@ def main():
         cnx.database = DB_NAME
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Call Make DB")
+            print("Call Make DB\n")
             create_database(cursor)
             cnx.database = DB_NAME
-            print("Call Make Tables")
+            print("Call Make Tables\n")
             create_tables(cursor)
         else:
             print(err)
             exit(1)
 
-    while True:
-        debcred = input('(d)ebt, (c)redit\n')
+    if args.type:
+        print(args.type)
+        print("type")
+        if args.type == "D":
+            add_debt(cursor)
+            print_debt(cursor)
+#            cursor.close()
+#            cnx.close()
+        elif args.type == "C":
+            add_credit(cursor)
+            print_credit(cursor)
+#            cursor.close()
+#            cnx.close()
+    else:
+        print("\n")
+        print('{:=^80}'.format("Debts"))
+        print_debt(cursor)
+        print("\n")
+        print('{:=^80}'.format("Credits"))
+        print_credit(cursor)
+"""        debcred = input('(d)ebt, (c)redit\n')
         if debcred in ['d', 'c']:
             if debcred == 'd':
                 add_debt(cursor)
                 print_debt(cursor)
+                cursor.close()
+                cnx.close()
             elif debcred == 'c':
                 add_credit(cursor)
                 print_credit(cursor)
+                cursor.close()
+                cnx.close()
         else:
-
             cursor.close()
             cnx.close()
+"""
 
 
 def create_database(in_cursor):
@@ -80,20 +120,24 @@ def create_tables(in_cursor):
 
 def add_debt(in_cursor):
     """Insert a debt I owe into the database."""
+    os.system('clear')
+    print("Add Debt\n")
     person = input('Enter name:\n')
     while True:
         cbo = input('(c)ash, (b)arter, (o)ther:\n')
         if cbo in ['c', 'b', 'o']:
             break
     amount = int(input("Cash:\n$") or "0")
-    barter = input("Barter:\n")
-    other = input("Other:\n")
+    barter = input("Barter:\n") or ""
+    other = input("Other:\n") or ""
     debt = "INSERT INTO debt (date, name, type, value, barter, other, pay_date) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    print(debt)
     payback = datetime.now().date() + timedelta(seconds=160000 + (((amount ** 0.5) * 1.5) * 90000))
     today = datetime.now().date()
     debt_data = (today, person, cbo, amount, barter, other, payback)
     in_cursor.execute(debt, debt_data)
     print(in_cursor.lastrowid)
+
 
 def print_debt(in_cursor):
     """Print all the debts I owe"""
@@ -105,6 +149,7 @@ def print_debt(in_cursor):
         r = [str(rec[i]) for i in range(0,8)]  # Reordering the record too.
         print('{} {} {} {:12} ${:5} {:16} {:16} {}'.format(r[0], r[1], r[3], r[2], r[4], r[5], r[6], r[7]))
     print("Cash $" + str(total), "\n")
+
 
 def add_credit(in_cursor):
     """Insert a credit I am owed into the database.
