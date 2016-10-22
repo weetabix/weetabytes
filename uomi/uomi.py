@@ -70,14 +70,19 @@ def main():
             add_debt(cursor)
             print_debt(cursor)
             cnx.commit()
-#            cursor.close()
-#            cnx.close()
         elif args.type == "+C":
+            add_credit(cursor)
+            print_credit(cursor)
+            cnx.commit()
+        elif args.type == "-D":
+            delete_debt(cursor, cnx)
+            print_debt(cursor)
+            cnx.commit()
+        elif args.type == "-C":
             delete_credit(cursor, cnx)
             print_credit(cursor)
             cnx.commit()
-#            cursor.close()
-#            cnx.close()
+
     else:
         print("\n")
         print('{:═^80}'.format(" Debts "))
@@ -85,24 +90,6 @@ def main():
         print("\n")
         print('{:═^80}'.format(" Credits "))
         print_credit(cursor)
-
-
-"""        debcred = input('(d)ebt, (c)redit\n')
-        if debcred in ['d', 'c']:
-            if debcred == 'd':
-                add_debt(cursor)
-                print_debt(cursor)
-                cursor.close()
-                cnx.close()
-            elif debcred == 'c':
-                add_credit(cursor)
-                print_credit(cursor)
-                cursor.close()
-                cnx.close()
-        else:
-            cursor.close()
-            cnx.close()
-"""
 
 
 def create_database(in_cursor):
