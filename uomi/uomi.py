@@ -8,18 +8,28 @@ import argparse
 parser = argparse.ArgumentParser(description='A tool to manage debts and credits owed.\
                                              The default behaviour is to list everything.')
 parser.add_argument('-ad', '--add-debt',
-        help='Add debt',
-        action='store_const',
-        const='D',
-        dest='type')
-#        nargs='*')
+                    help='Add debt',
+                    action='store_const',
+                    const='+D',
+                    dest='type')
 parser.add_argument('-ac', '--add-credit',
-        help='Add credit',
-        action='store_const',
-        const='C',
-        dest='type')
+                    help='Add credit',
+                    action='store_const',
+                    const='+C',
+                    dest='type')
+parser.add_argument('-dd', '--delete-debt',
+                    help='Add debt',
+                    action='store_const',
+                    const='-D',
+                    dest='type')
+parser.add_argument('-dc', '--delete-credit',
+                    help='Add credit',
+                    action='store_const',
+                    const='-C',
+                    dest='type')
 
 args = parser.parse_args()
+
 
 def main():
     """Main is here so I can hide long ugly lists of SQL variables at the bottom."""
@@ -56,23 +66,27 @@ def main():
     if args.type:
         print(args.type)
         print("type")
-        if args.type == "D":
+        if args.type == "+D":
             add_debt(cursor)
             print_debt(cursor)
+            cnx.commit()
 #            cursor.close()
 #            cnx.close()
-        elif args.type == "C":
-            add_credit(cursor)
+        elif args.type == "+C":
+            delete_credit(cursor, cnx)
             print_credit(cursor)
+            cnx.commit()
 #            cursor.close()
 #            cnx.close()
     else:
         print("\n")
-        print('{:=^80}'.format("Debts"))
+        print('{:═^80}'.format(" Debts "))
         print_debt(cursor)
         print("\n")
-        print('{:=^80}'.format("Credits"))
+        print('{:═^80}'.format(" Credits "))
         print_credit(cursor)
+
+
 """        debcred = input('(d)ebt, (c)redit\n')
         if debcred in ['d', 'c']:
             if debcred == 'd':
@@ -123,6 +137,7 @@ def add_debt(in_cursor):
     os.system('clear')
     print("Add Debt\n")
     person = input('Enter name:\n')
+    cbo = ""
     while True:
         cbo = input('(c)ash, (b)arter, (o)ther:\n')
         if cbo in ['c', 'b', 'o']:
@@ -139,6 +154,15 @@ def add_debt(in_cursor):
     print(in_cursor.lastrowid)
 
 
+def delete_debt(in_cursor, cnx):
+    recd = input('Which Record?\n')
+    delete = "DELETE FROM debt WHERE debt_no = %s"
+    delete_data = (recd,)
+    print(delete, delete_data)
+    in_cursor.execute(delete, delete_data)
+    cnx.commit()
+
+
 def print_debt(in_cursor):
     """Print all the debts I owe"""
     query = "SELECT `debt_no`, `date`, `name`, `type`, `value`, `barter`, `other`, `pay_date` FROM `debt` WHERE 1"
@@ -146,16 +170,19 @@ def print_debt(in_cursor):
     total = 0
     for rec in in_cursor:
         total += int(rec[4])
-        r = [str(rec[i]) for i in range(0,8)]  # Reordering the record too.
+        r = [str(rec[i]) for i in range(0, 8)]  # Reordering the record too.
         print('{} {} {} {:12} ${:5} {:16} {:16} {}'.format(r[0], r[1], r[3], r[2], r[4], r[5], r[6], r[7]))
     print("Cash $" + str(total), "\n")
 
 
 def add_credit(in_cursor):
     """Insert a credit I am owed into the database.
-    Repay time is calculated as 2 days plus a little over a day for
-    every $13 or so on a sliding scale."""
+    Repay time is calculated as slightly less than two days (160ksec)
+    plus a little over a day (90ksec) for every $13 or so on a sliding scale.
+    (I enjoy decimal-second timekeeping. sue me.)
+    """
     person = input('Enter name:\n')
+    cbo = ""
     while True:
         cbo = input('(c)ash, (b)arter, (o)ther:\n')
         if cbo in ['c', 'b', 'o']:
@@ -167,10 +194,19 @@ def add_credit(in_cursor):
     payback = datetime.now().date() + timedelta(seconds=160000 + (((amount ** 0.5) * 1.5) * 90000))
     today = datetime.now().date()
     credit_data = (today, person, cbo, amount, barter, other, payback)
-    print(credit,"\n")
+    print(credit, "\n")
     print(credit_data)
     in_cursor.execute(credit, credit_data)
     print(in_cursor.lastrowid)
+
+
+def delete_credit(in_cursor, cnx):
+    recd = input('Which Record?\n')
+    delete = "DELETE FROM credit WHERE credit_no = %s"
+    delete_data = (recd,)
+    print(delete, delete_data)
+    in_cursor.execute(delete, delete_data)
+    cnx.commit()
 
 
 def print_credit(in_cursor):
@@ -180,7 +216,7 @@ def print_credit(in_cursor):
     total = 0
     for rec in in_cursor:
         total += int(rec[4])
-        r = [str(rec[i]) for i in range(0,8)]  # Reordering the record too.
+        r = [str(rec[i]) for i in range(0, 8)]  # Reordering the record too.
         print('{} {} {} {:12} ${:5} {:16} {:16} {}'.format(r[0], r[1], r[3], r[2], r[4], r[5], r[6], r[7]))
     print("Cash $" + str(total), "\n")
 
