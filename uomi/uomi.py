@@ -1,10 +1,11 @@
 #!/usr/bin/python3
+
 import mysql.connector
 from mysql.connector import errorcode
 from datetime import datetime, timedelta
 import os
 import argparse
-import textwrap
+
 parser = argparse.ArgumentParser(description='A tool to manage debts and credits owed.\
                                              The default behaviour is to list everything.')
 parser.add_argument('-ad', '--add-debt',
