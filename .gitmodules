@@ -1,0 +1,3 @@
+[submodule "term-doist"]
+	path = term-doist
+	url = git@github.com:weetabix/term-doist.git
